@@ -14,10 +14,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
+import androidx.navigation.navArgument
 import com.usu.firebasetodosapplication.ui.screens.*
+import com.usu.firebasetodosapplication.ui.viewmodels.RootNavigationViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -29,6 +32,7 @@ fun RootNavigation() {
     val currentDestination = navBackStackEntry?.destination
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val viewModel: RootNavigationViewModel = viewModel()
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -52,6 +56,7 @@ fun RootNavigation() {
             if (currentDestination?.hierarchy?.none { it.route == Routes.launchNavigation.route || it.route == Routes.splashScreen.route } == true) {
                 DropdownMenuItem(onClick = {
                     // TODO Log the user out
+                    viewModel.signOutUser()
                     scope.launch {
                         scaffoldState.drawerState.snapTo(DrawerValue.Closed)
                     }
@@ -84,7 +89,12 @@ fun RootNavigation() {
                 composable(route = Routes.signUp.route) { SignUpScreen(navController) }
             }
             navigation(route = Routes.todosNavigation.route, startDestination = Routes.todos.route) {
-                composable(route = Routes.editTodo.route) { TodosModificationScreen(navController) }
+                composable(
+                    route = "edittodo?id={id}",
+                    arguments = listOf(navArgument("id") { defaultValue = "new" })
+                ) { navBackStackEntry ->
+                    TodosModificationScreen(navController, navBackStackEntry.arguments?.get("id").toString())
+                }
                 composable(route = Routes.todos.route) { TodosScreen(navController) }
             }
             composable(route = Routes.splashScreen.route) { SplashScreen(navController) }

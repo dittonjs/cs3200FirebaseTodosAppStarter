@@ -3,6 +3,7 @@ package com.usu.firebasetodosapplication.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusOrderModifier
@@ -12,7 +13,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.usu.firebasetodosapplication.ui.components.FormField
+import com.usu.firebasetodosapplication.ui.navigation.Routes
 import com.usu.firebasetodosapplication.ui.viewmodels.SignUpViewModel
+import com.usu.firebasetodosapplication.util.Analytics
 import kotlinx.coroutines.launch
 
 @Composable
@@ -20,6 +23,16 @@ fun SignUpScreen(navHostController: NavHostController) {
     val viewModel: SignUpViewModel = viewModel()
     val scope = rememberCoroutineScope()
     val state = viewModel.uiState
+    LaunchedEffect(true) {
+        Analytics.logScreenVisit("Sign Up")
+    }
+    LaunchedEffect(state.signUpSuccess) {
+        if (state.signUpSuccess) {
+            navHostController.navigate(Routes.todosNavigation.route) {
+                popUpTo(0)
+            }
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -17,23 +17,36 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import com.usu.firebasetodosapplication.ui.components.FormField
 import com.usu.firebasetodosapplication.ui.models.Todo
 import com.usu.firebasetodosapplication.ui.viewmodels.TodosModificationViewModel
 import com.usu.firebasetodosapplication.ui.viewmodels.TodosViewModel
+import com.usu.firebasetodosapplication.util.Analytics
 import com.usu.firebasetodosapplication.util.priorityText
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
 @Composable
-fun TodosModificationScreen(navHostController: NavHostController) {
+fun TodosModificationScreen(navHostController: NavHostController, id: String?) {
     val viewModel: TodosModificationViewModel = viewModel()
     val state = viewModel.uiState
     val scope = rememberCoroutineScope()
-    
+
+    LaunchedEffect(true) {
+        viewModel.setupInitialState(id)
+    }
+    LaunchedEffect(true) {
+        Analytics.logScreenVisit("Todo Modification")
+    }
     LaunchedEffect(state.saveSuccess) {
+        println(id)
         if (state.saveSuccess) {
             navHostController.popBackStack()
         }
@@ -115,6 +128,18 @@ fun TodosModificationScreen(navHostController: NavHostController) {
             style = TextStyle(color = MaterialTheme.colors.error),
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Right
+        )
+        // put ad right here
+        // ca-app-pub-3940256099942544/6300978111
+        AndroidView(
+            modifier = Modifier.fillMaxWidth(),
+            factory = { context ->
+                AdView(context).apply {
+                    setAdSize(AdSize.BANNER)
+                    adUnitId = "ca-app-pub-3940256099942544/6300978111"
+                    loadAd(AdRequest.Builder().build())
+                }
+            },
         )
     }
 }

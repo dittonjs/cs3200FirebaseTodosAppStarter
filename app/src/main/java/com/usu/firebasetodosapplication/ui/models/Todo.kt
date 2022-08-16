@@ -1,13 +1,13 @@
 package com.usu.firebasetodosapplication.ui.models
 
 data class Todo(
-    val id: String?,
-    val userId: String?,
-    val title: String?,
-    val priority: Int?,
-    val estimatedCompletionTime: Int?,
-    val description: String?,
-    val isCompleted: Boolean?
+    val id: String? = null,
+    val userId: String? = null,
+    val title: String? = null,
+    val priority: Int? = null,
+    val estimatedCompletionTime: Int? = null,
+    val description: String? = null,
+    val completed: Boolean? = null
 ) {
     companion object Priority {
         const val PRIORITY_LOW = 0

@@ -10,12 +10,15 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.android.gms.ads.MobileAds
 import com.usu.firebasetodosapplication.ui.App
 import com.usu.firebasetodosapplication.ui.theme.FirebaseTodosApplicationTheme
+import com.usu.firebasetodosapplication.util.Analytics
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Analytics.logAppLaunch()
         setContent {
             App()
         }

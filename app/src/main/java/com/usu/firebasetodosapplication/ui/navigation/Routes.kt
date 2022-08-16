@@ -9,6 +9,6 @@ object Routes {
     val signIn = Screen("signin")
     val signUp = Screen("signup")
     val todos = Screen("todos")
-    val editTodo = Screen("edittodo")
+    val editTodo = Screen("edittodo?id={id}")
     val splashScreen = Screen("splashscreen")
 }

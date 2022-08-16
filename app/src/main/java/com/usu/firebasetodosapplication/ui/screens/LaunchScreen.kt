@@ -3,15 +3,20 @@ package com.usu.firebasetodosapplication.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.usu.firebasetodosapplication.ui.navigation.Routes
+import com.usu.firebasetodosapplication.util.Analytics
 
 @Composable
 fun LaunchScreen(navHostController: NavHostController) {
+    LaunchedEffect(true) {
+        Analytics.logScreenVisit("Launch")
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceAround

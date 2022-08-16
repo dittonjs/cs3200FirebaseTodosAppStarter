@@ -26,7 +26,7 @@ fun TodoListItem(
         Column (){
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = todo.isCompleted == true, onCheckedChange = toggle)
+                    Checkbox(checked = todo.completed == true, onCheckedChange = toggle)
                     Text(text = todo.title ?: "", style = MaterialTheme.typography.subtitle2)
                 }
                 IconButton(onClick = onEditPressed) {
@@ -69,7 +69,7 @@ fun TodoListItemPreview() {
             estimatedCompletionTime = 5,
             id = "fcs3k3lkm2309mgfs",
             priority = Todo.PRIORITY_LOW,
-            isCompleted = true,
+            completed = true,
             userId = "23oiknmf09sj0982jlkjsdf"
         ))
     }
