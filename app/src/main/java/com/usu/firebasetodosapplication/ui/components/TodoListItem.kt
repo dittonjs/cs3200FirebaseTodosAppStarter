@@ -20,6 +20,12 @@ import androidx.compose.ui.unit.dp
 import com.usu.firebasetodosapplication.ui.models.Todo
 import com.usu.firebasetodosapplication.ui.theme.FirebaseTodosApplicationTheme
 
+enum class SwipeState {
+    OPEN,
+    CLOSED
+}
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TodoListItem(
     todo: Todo,
@@ -27,49 +33,87 @@ fun TodoListItem(
     onEditPressed: () -> Unit = {}
 ) {
     var showDetail by remember { mutableStateOf(false) }
-
-    Surface(
-        modifier = Modifier.clickable {
-            showDetail = !showDetail
-        },
-        elevation = 2.dp,
-        shape = RoundedCornerShape(4.dp),
+    val swipeableState = rememberSwipeableState(initialValue = SwipeState.CLOSED)
+    val anchors = mapOf(
+        0f to SwipeState.CLOSED,
+        -200f to SwipeState.OPEN
+    )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .swipeable(
+                state = swipeableState,
+                anchors = anchors,
+                orientation = Orientation.Horizontal,
+            )
     ) {
-        Column (){
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = todo.completed == true, onCheckedChange = toggle)
-                    Text(text = todo.title ?: "", style = MaterialTheme.typography.subtitle2)
-                }
-                IconButton(onClick = onEditPressed) {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit button")
+        Row(modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(.5f),
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
                 }
             }
-            AnimatedVisibility(
-                visible = showDetail,
-                enter = expandVertically(),
-                exit = shrinkVertically(),
-            ) {
-                Column {
-                    Divider()
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(modifier = Modifier.padding(16.dp, 0.dp)) {
-                        Text(text = todo.description ?: "")
+        }
+        Surface(
+            modifier = Modifier
+                .offset { IntOffset(swipeableState.offset.value.toInt(), 0) }
+                .clickable {
+                    showDetail = !showDetail
+                },
+            elevation = 2.dp,
+            shape = RoundedCornerShape(4.dp),
+        ) {
+            Column (){
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(checked = todo.completed == true, onCheckedChange = toggle)
+                        Text(text = todo.title ?: "", style = MaterialTheme.typography.subtitle2)
                     }
-                    Text(
-                        text = when(todo.priority) {
-                            Todo.PRIORITY_HIGH -> "Priority: HIGH"
-                            Todo.PRIORITY_MEDIUM -> "Priority: MEDIUM"
-                            Todo.PRIORITY_LOW -> "Priority: LOW"
-                            else -> ""
-                        },
-                        modifier = Modifier.padding(16.dp, 0.dp)
-                    )
-                    Text(
-                        text = "${todo.estimatedCompletionTime ?: ""}hrs",
-                        modifier = Modifier.padding(16.dp, 0.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    IconButton(onClick = onEditPressed) {
+                        Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit button")
+                    }
+                }
+                AnimatedVisibility(
+                    visible = showDetail,
+                    enter = expandVertically(),
+                    exit = shrinkVertically(),
+                ) {
+                    Column {
+                        Divider()
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(modifier = Modifier.padding(16.dp, 0.dp)) {
+                            Text(text = todo.description ?: "")
+                        }
+                        Text(
+                            text = when(todo.priority) {
+                                Todo.PRIORITY_HIGH -> "Priority: HIGH"
+                                Todo.PRIORITY_MEDIUM -> "Priority: MEDIUM"
+                                Todo.PRIORITY_LOW -> "Priority: LOW"
+                                else -> ""
+                            },
+                            modifier = Modifier.padding(16.dp, 0.dp)
+                        )
+                        Text(
+                            text = "${todo.estimatedCompletionTime ?: ""}hrs",
+                            modifier = Modifier.padding(16.dp, 0.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
                 }
             }
         }

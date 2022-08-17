@@ -1,6 +1,7 @@
 package com.usu.firebasetodosapplication.ui.screens
 
 import android.widget.Space
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,6 +14,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +40,7 @@ fun TodosModificationScreen(navHostController: NavHostController, id: String?) {
     val viewModel: TodosModificationViewModel = viewModel()
     val state = viewModel.uiState
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     LaunchedEffect(true) {
         viewModel.setupInitialState(id)
@@ -48,6 +51,11 @@ fun TodosModificationScreen(navHostController: NavHostController, id: String?) {
     LaunchedEffect(state.saveSuccess) {
         println(id)
         if (state.saveSuccess) {
+            Toast.makeText(
+                context,
+                "Todo item saved successfully",
+                Toast.LENGTH_LONG
+            ).show()
             navHostController.popBackStack()
         }
     }
