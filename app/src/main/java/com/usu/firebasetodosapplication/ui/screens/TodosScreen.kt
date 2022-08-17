@@ -11,9 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.usu.firebasetodosapplication.ui.components.Loader
 import com.usu.firebasetodosapplication.ui.components.TodoListItem
 import com.usu.firebasetodosapplication.ui.viewmodels.TodosViewModel
 import com.usu.firebasetodosapplication.util.Analytics
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -35,29 +38,38 @@ fun TodosScreen(navHostController: NavHostController) {
     }
 
     LaunchedEffect(true) {
-        viewModel.getTodos()
+        val loadingTodos = async {viewModel.getTodos()}
+        delay(2000)
+        loadingTodos.await()
+        state.loading = false
     }
-    Column() {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(checked = state.showHigherPriorityItemsFirst, onCheckedChange = { state.showHigherPriorityItemsFirst = it })
-            Text(text = "Show high priority items first")
-        }
-        LazyColumn(modifier = Modifier
-            .fillMaxHeight()
-            .padding(16.dp)) {
-            items(sortedList, key = {it.id!!}) { todo ->
-                TodoListItem(
-                    todo = todo,
-                    toggle = {
-                        scope.launch {
-                            viewModel.toggleTodoCompletion(todo)
+
+    Column {
+        if (state.loading) { 
+            Spacer(modifier = Modifier.height(16.dp))
+            Loader()
+        } else {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(checked = state.showHigherPriorityItemsFirst, onCheckedChange = { state.showHigherPriorityItemsFirst = it })
+                Text(text = "Show high priority items first")
+            }
+            LazyColumn(modifier = Modifier
+                .fillMaxHeight()
+                .padding(16.dp)) {
+                items(sortedList, key = {it.id!!}) { todo ->
+                    TodoListItem(
+                        todo = todo,
+                        toggle = {
+                            scope.launch {
+                                viewModel.toggleTodoCompletion(todo)
+                            }
+                        },
+                        onEditPressed = {
+                            navHostController.navigate("edittodo?id=${todo.id}")
                         }
-                    },
-                    onEditPressed = {
-                        navHostController.navigate("edittodo?id=${todo.id}")
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }

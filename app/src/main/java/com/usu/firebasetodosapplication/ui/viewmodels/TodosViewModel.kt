@@ -13,6 +13,7 @@ class TodosScreenState {
     val _todos = mutableStateListOf<Todo>()
     val todos: List<Todo> get() = _todos
     var showHigherPriorityItemsFirst by mutableStateOf(false)
+    var loading by mutableStateOf(true)
 }
 
 class TodosViewModel(application: Application): AndroidViewModel(application) {
